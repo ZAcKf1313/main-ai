@@ -1,4 +1,57 @@
--- Decompiled with the Synapse X Luau decompiler.
+module.MakeFighter = function(chr)
+	
+	--required ingredients :D
+	local h = chr:FindFirstChildOfClass("Humanoid") 
+	
+	if not h then return else
+		
+		--ai variables
+		config = loadstring(game:HttpGet("https://raw.githubusercontent.com/TheLegendz-DaBest/swordai/main/config.lua"))()
+		local pp = chr.PrimaryPart
+		local target = nil
+		local curstate = nil
+		local states = {}
+		local sword = chr.Swvule
+		local shiftlock = Instance.new("BodyGyro")
+    shiftlock.Name = "ShiftLock"
+    shiftlock.D = 500
+    shiftlock.MaxTorque = Vector3.new(0, 400000000, 0)
+		local lag = config.Lag or 1
+		local enemies = 0
+		local dir = 1 --direction the fighter circles enemies in
+		shiftlock.Parent = chr.PrimaryPart
+		shiftlock.P = 0
+		
+		local Grips = {
+			Up = CFrame.new(0, 0, -1.70000005, 0, 0, 1, 1, 0, 0, 0, 1, 0),
+			Out = CFrame.new(0, 0, -1.70000005, 0, 1, 0, 1, -0, 0, 0, 0, -1)
+		}
+
+		--state library for managing states (over engineering?)
+		local State = {
+			
+			--change state
+			Change = function(newstate,run)
+				curstate = states[newstate]
+				if run then curstate() end
+			end;
+			
+			--construct a new state
+			new = function(name,func) --name, delay after tick, code per tick
+				states[name] = function()
+					func()
+				end
+			end;
+			
+			--run the current state
+			RunCurState = function()
+				if curstate then
+					h.WalkToPoint = pp.Position --WALKING DIRECTION LASTS ONLY FOR ONE TICK, RESETTING IT WITH THIS LINE
+					shiftlock.P = 0 --SAME FOR SHIFT LOCK, ONLY ENABLED FOR THE TICK IT IS SET ON
+					curstate()
+				end
+			end;
+		}
 
 local v1 = {};
 grips = {
